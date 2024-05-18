@@ -3,6 +3,7 @@ import threading
 
 from config import config
 from config import append_all
+from config import extract_domain_name
 
 def find_first(lst, cond):
     return next((item for item in lst if cond(item)), None)
@@ -117,3 +118,10 @@ def find_ns_ip(rrs: list[RR], name: str) -> tuple[str, bool]:
         return None, False
     
     return ns_ip, True
+
+def all_company_dns() -> list[RR]:
+        rrs = []
+        for stmt in config.company_servers:
+            rrs.append(RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
+            rrs.append(RR(stmt.name, stmt.ip, 'A'))
+        return rrs

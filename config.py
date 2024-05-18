@@ -1,7 +1,5 @@
 import re
 
-import cache
-
 CONFIG_FILEPATH = './config.txt'
 
 class Statement:
@@ -64,13 +62,6 @@ class Config:
         except StopIteration:
             return None
         return stmt.port
-    
-    def all_company_dns(self) -> list[cache.RR]:
-        rrs = []
-        for stmt in self.company_servers:
-            rrs.append(cache.RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
-            rrs.append(cache.RR(stmt.name, stmt.ip, 'A'))
-        return rrs
     
 def append_all(filepath, pattern, cls, obj):
     pattern = re.compile(pattern)
