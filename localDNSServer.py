@@ -20,8 +20,9 @@ def worker(rrcache: cache.Cache):
                 if is_resolved:
                     reply.add_answer(*rrs)
                     break
-                
+
                 query = reply.to_query()
+                query.recur_desire = True
                 ns_ip, is_ns_resolved = cache.find_ns_ip(rrs, recevied_query.name)
                 if not is_ns_resolved:
                     break
