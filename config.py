@@ -1,5 +1,7 @@
 import re
 
+import cache
+
 CONFIG_FILEPATH = './config.txt'
 
 class Statement:
@@ -15,12 +17,16 @@ class Statement:
 class Config:
     def __init__(self):
         self.statements = []
+        self.company_servers = []
         self.__local = None
         self.__root = None
         self.__comtld = None
 
     def append(self, statement):
         self.statements.append(statement)
+
+    def append_company(self, server):
+        self.company_servers.append(server)
 
     @property
     def local(self):
@@ -43,7 +49,7 @@ class Config:
                                      if stmt.server == 'comTLD')
         return self.__comtld
     
-    def find_by_server(self, server):
+    def find_by_server(self, server) -> Statement:
         try:
             stmt = next(stmt for stmt in self.statements \
                         if stmt.server == server)
@@ -59,6 +65,13 @@ class Config:
             return None
         return stmt.port
     
+    def all_company_dns(self) -> list[cache.RR]:
+        rrs = []
+        for stmt in self.company_servers:
+            rrs.append(cache.RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
+            rrs.append(cache.RR(stmt.name, stmt.ip, 'A'))
+        return rrs
+    
 def append_all(filepath, pattern, cls, obj):
     pattern = re.compile(pattern)
     with open(filepath, 'r') as file:
@@ -67,6 +80,11 @@ def append_all(filepath, pattern, cls, obj):
                 match = pattern.match(re.sub(r'\s+', '', line))
                 el = cls(*match.groups())
                 obj.append(el)
+
+def extract_domain_name(name):
+    if match := re.search(r'([a-zA-Z0-9\-]*\.com)', name):
+        return match.string
+    return None
 
 config = Config()
 append_all(
