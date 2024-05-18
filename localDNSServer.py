@@ -11,16 +11,33 @@ def worker(rrcache: cache.Cache):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp_socket:
         udp_socket.bind(('', config.local.port))
         while True:
-            query_bytes, address = udp_socket.recvfrom(4092)
-            query = message.decode(query_bytes)
-            reply = query.copy()
-            # todo: resolve 과정....
-            # if rr := rrcache.resolve(query.name, 'A') is not None:
-            #     reply.add_answer(rr)
-            # elif rr := rrcache.resolve(~~xxx.com~~, 'NS') is not None:
-            #     reply.add_answer(rr)
-            # else:
-            ############    
+            recevied_query_bytes, address = udp_socket.recvfrom(4092)
+            recevied_query = message.decode(recevied_query_bytes)
+            reply = recevied_query.copy()
+
+            rrs, is_resolved = rrcache.resolve(recevied_query.name)
+            if is_resolved:
+                reply.add_answer(*rrs)
+            else:
+                while True:
+                    query = reply.to_query()
+                    ns_ip, is_ns_resolved = cache.find_ns_ip(rrs, recevied_query.name)
+                    if not is_ns_resolved:
+                        break
+
+                    query.add_log(config.local.server)
+                    udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
+
+                    reply_bytes, _ = udp_socket.recvfrom(4092)
+                    reply = message.decode(reply_bytes)
+                    
+                    rrcache.append(*reply.answer)
+                    rrs, is_resolved = rrcache.resolve(recevied_query.name)
+                    _, is_resolved = cache.find_a_ip(rrs, query.name)
+                    if is_resolved:
+                        reply.add_answer(*rrs)
+                        break
+                    
             reply.add_log(config.local.server)
             udp_socket.sendto(reply.encode(), address)
 
