@@ -6,10 +6,9 @@ import threading
 from config import config
 import cache
 import message
-
 import flag
 
-def worker(rrcache: cache.Cache, recur_flag: flag.Flag, server: str, port: int):
+def worker(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, server: str, port: int):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp_socket:
         udp_socket.bind(('', port))
         while True:
@@ -19,7 +18,9 @@ def worker(rrcache: cache.Cache, recur_flag: flag.Flag, server: str, port: int):
 
             while True:
                 rrs, is_resolved = rrcache.resolve(recevied_query.name)
-                if is_resolved or not (recur_flag.value or config.root.ip == address[1]):
+                if is_resolved or \
+                    not recevied_query.recur_desire or \
+                    not (recur_flag.value or config.root.ip == address[1]):
                     reply.add_answer(*rrs)
                     break
 
@@ -33,8 +34,9 @@ def worker(rrcache: cache.Cache, recur_flag: flag.Flag, server: str, port: int):
                 udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
                 reply_bytes, _ = udp_socket.recvfrom(4092)
                 reply = message.decode(reply_bytes)
-                rrcache.append(*reply.answer)
-                
+                if is_caching:
+                    rrcache.append(*reply.answer)
+
             reply.add_log(config.local.server)
             udp_socket.sendto(reply.encode(), address)
 
@@ -43,7 +45,9 @@ if __name__ == '__main__':
     rrcache.append(cache.RR(config.root.name, config.root.ip, 'A'))
     recur_flag = flag.Flag(True)
     pattern = re.compile(r'^\s*cache\s*$')
-    worker_thread = threading.Thread(target=worker, args=[rrcache, recur_flag, config.local.server, config.local.port])
+    worker_thread = threading.Thread( \
+        target=worker, \
+        args=[rrcache, recur_flag, True, config.local.server, config.local.port])
     worker_thread.start()
     while True:
         prompt = input('>>> ')
