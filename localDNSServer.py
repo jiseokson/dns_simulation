@@ -16,27 +16,25 @@ def worker(rrcache: cache.Cache):
             reply = recevied_query.copy()
 
             rrs, is_resolved = rrcache.resolve(recevied_query.name)
-            if is_resolved:
-                reply.add_answer(*rrs)
-            else:
-                while True:
-                    query = reply.to_query()
-                    ns_ip, is_ns_resolved = cache.find_ns_ip(rrs, recevied_query.name)
-                    if not is_ns_resolved:
-                        break
+            while True:
+                if is_resolved:
+                    reply.add_answer(*rrs)
+                    break
+                
+                query = reply.to_query()
+                ns_ip, is_ns_resolved = cache.find_ns_ip(rrs, recevied_query.name)
+                if not is_ns_resolved:
+                    break
 
-                    query.add_log(config.local.server)
-                    udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
+                query.add_log(config.local.server)
+                udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
 
-                    reply_bytes, _ = udp_socket.recvfrom(4092)
-                    reply = message.decode(reply_bytes)
-                    
-                    rrcache.append(*reply.answer)
-                    rrs, is_resolved = rrcache.resolve(recevied_query.name)
-                    _, is_resolved = cache.find_a_ip(rrs, query.name)
-                    if is_resolved:
-                        reply.add_answer(*rrs)
-                        break
+                reply_bytes, _ = udp_socket.recvfrom(4092)
+                reply = message.decode(reply_bytes)
+
+                rrcache.append(*reply.answer)
+                rrs, is_resolved = rrcache.resolve(recevied_query.name)
+                _, is_resolved = cache.find_a_ip(rrs, query.name)
                     
             reply.add_log(config.local.server)
             udp_socket.sendto(reply.encode(), address)
