@@ -5,9 +5,6 @@ from config import config
 from config import append_all
 from config import extract_domain_name
 
-def find_first(lst, cond):
-    return next((item for item in lst if cond(item)), None)
-
 class RR:
     def __init__(self, name, value, type):
         self.name = name
@@ -44,41 +41,10 @@ class Cache:
 
     def resolve(self, name) -> tuple[list[RR], bool]:
         with self.lock:
-            rrs = []
+            pass
 
-            # A type RR
-            cname = name
-            cname_rr: RR|None = find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'CNAME')
-            if cname_rr:
-                rrs.append(cname_rr)
-                cname = cname_rr.value
-            a_rr: RR|None = find_first(self.rrs, lambda rr: rr.name == cname and rr.type == 'A')
-            if a_rr:
-                rrs.append(a_rr)
-                return rrs, True
-
-            # authoritative dns
-            domain_name = re.search(r'([a-zA-Z0-9\-]*\.com)', name).string
-            ns_rr: RR|None = find_first(self.rrs, lambda rr: re.match(rf'[a-zA-Z0-9\-]*\.{domain_name}$', rr.name) and rr.type == 'NS') # regex 앞부분 지워도 되지 않나?????? 어차피 (a.com, dns.a.com, NS), (dns.a.com, 1.1.1.1, A) 이런식이니까???
-            if ns_rr:
-                rrs.append(ns_rr)
-                a_rr: RR|None = find_first(self.rrs, lambda rr: rr.name == ns_rr.value and rr.type == 'A')
-                if a_rr: rrs.append(a_rr)
-                return rrs, False
-
-            # comtld dns
-            ns_rr = find_first(self.rrs, lambda rr: rr.name == config.comtld.name)
-            if ns_rr:
-                rrs.append(ns_rr)
-                return rrs, False
-
-            # root dns
-            ns_rr = find_first(self.rrs, lambda rr: rr.name == config.root.name)
-            if ns_rr:
-                rrs.append(ns_rr)
-                return rrs, False
-            
-            return None, False
+def find_first(lst, cond):
+    return next((item for item in lst if cond(item)), None)
 
 def all_company_dns() -> list[RR]:
         rrs = []
