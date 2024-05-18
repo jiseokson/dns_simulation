@@ -34,7 +34,7 @@ def worker(rrcache: cache.Cache, recur_flag: flag.Flag, server: str, port: int):
                 reply_bytes, _ = udp_socket.recvfrom(4092)
                 reply = message.decode(reply_bytes)
                 rrcache.append(*reply.answer)
-                    
+                
             reply.add_log(config.local.server)
             udp_socket.sendto(reply.encode(), address)
 
