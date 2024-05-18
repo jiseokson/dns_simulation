@@ -1,4 +1,3 @@
-import sys
 import re
 import threading
 
@@ -11,11 +10,13 @@ if __name__ == '__main__':
     rrcache = cache.Cache()
     rrcache.append(cache.RR(config.root.name, config.root.ip, 'A'))
     recur_flag = flag.Flag(True)
-    pattern = re.compile(r'^\s*cache\s*$')
+
     worker_thread = threading.Thread( \
         target=resolver.resolver, \
         args=[rrcache, recur_flag, True, config.local.server, config.local.port])
     worker_thread.start()
+
+    pattern = re.compile(r'^\s*cache\s*$')
     while True:
         prompt = input('>>> ')
         match = pattern.match(prompt)

@@ -1,7 +1,4 @@
-import sys
-import re
 import socket
-import threading
 
 from config import config
 import cache
@@ -25,7 +22,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                     reply.add_answer(*rrs)
                     break
 
-                query = reply.to_query()
+                query = reply.copy_to_query()
                 query.recur_desire = recur_flag.value
                 ns_ip, is_ns_resolved = cache.resolve_ip(rrs, recevied_query.name, 'NS')
                 if not is_ns_resolved:

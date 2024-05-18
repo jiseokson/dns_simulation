@@ -2,7 +2,6 @@ import re
 import threading
 
 from config import config
-from config import append_all
 from config import extract_domain_name
 
 class RR:
@@ -23,12 +22,11 @@ class Cache:
         self.lock = threading.Lock()
         self.rrs = []
         if filepath is None: return
-        append_all(
-            filepath,
-            r'([a-zA-Z0-9][a-zA-Z0-9\-\.]*),(\d+\.\d+\.\d+\.\d+|[a-zA-Z0-9][a-zA-Z0-9\-\.]*),(A|NS|CNAME)',
-            RR,
-            self.rrs
-            )
+        with open(filepath, 'r') as file:
+            pattern = re.compile(r'([a-zA-Z0-9][a-zA-Z0-9\-\.]*),(\d+\.\d+\.\d+\.\d+|[a-zA-Z0-9][a-zA-Z0-9\-\.]*),(A|NS|CNAME)')
+            for line in file.readlines():
+                match = pattern.match(re.sub(r'\s+', '', line))
+                self.rrs.append(RR(*match.groups()))
 
     def append(self, *rrs):
         with self.lock:
@@ -43,7 +41,8 @@ class Cache:
         with self.lock:
             # A type RR
             rrchaine = []
-            cur_rr = find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
+            cur_rr = \
+                find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
                 find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'A')
             while cur_rr:
                 rrchaine.append(cur_rr)
@@ -75,16 +74,17 @@ def find_first(lst, cond):
 
 def all_company_dns() -> list[RR]:
         rrs = []
-        for stmt in config.company_servers:
+        for server in config.company_servers:
+            stmt = find_first(config.statements, lambda stmt: stmt.server == server)
             rrs.append(RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
             rrs.append(RR(stmt.name, stmt.ip, 'A'))
         return rrs
 
 def resolve_ip(rrs: list[RR], name: str, type: str) -> tuple[str, bool]:
     if type == 'A':
-        cur_rr: RR = find_first(rrs, lambda rr: rr.name == name and rr.type == 'CNAME')
-        if not cur_rr:
-            cur_rr: RR = find_first(rrs, lambda rr: rr.name == name and rr.type == 'A')
+        cur_rr: RR = \
+            find_first(rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
+            find_first(rrs, lambda rr: rr.name == name and rr.type == 'A')
     elif type == 'NS':
         cur_rr: RR = find_first(rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
 

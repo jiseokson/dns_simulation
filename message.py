@@ -17,7 +17,7 @@ class Message:
         message.message = copy.deepcopy(self.message)
         return message
     
-    def to_query(self):
+    def copy_to_query(self):
         message = self.copy()
         message.message['answer'] = []
         return message
@@ -28,6 +28,9 @@ class Message:
     def add_log(self, server):
         self.message['logs'].append(server)
 
+    def add_answer(self, *rrs):
+        for rr in rrs: self.message.get('answer').append(rr)
+    
     @property
     def name(self):
         return self.message.get('query')
@@ -41,24 +44,13 @@ class Message:
         if isinstance(value, bool): self.message['recur_desire'] = value
     
     @property
-    def recur_available(self):
-        return self.message.get('recur_available')
-    
-    @property
     def answer(self):
         return self.message.get('answer')
-    
-    @recur_available.setter
-    def recur_available(self, value):
-        if isinstance(value, bool): self.message['recur_available'] = value
 
-    def add_answer(self, *rrs):
-        for rr in rrs: self.message.get('answer').append(rr)
-    
     def __str__(self):
-        resolved_ip, _ = cache.find_a_ip(self.message.get('answer'), self.message.get('query')) 
+        ip, _ = cache.resolve_ip(self.message.get('answer'), self.message.get('query'), 'A')
         return \
-            f'{self.message.get("query")} : {resolved_ip}' + '\n' + \
+            f'{self.message.get("query")} : {ip}' + '\n' + \
             f'(via: {" -> ".join(self.message.get("logs"))})'
 
 def query(name, recur_desire):
