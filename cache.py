@@ -41,7 +41,34 @@ class Cache:
 
     def resolve(self, name) -> tuple[list[RR], bool]:
         with self.lock:
-            pass
+            # A type RR
+            rrchaine = []
+            cur_rr = find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
+                find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'A')
+            while cur_rr:
+                rrchaine.append(cur_rr)
+                cur_rr = find_first(self.rrs, lambda rr: rr.name == cur_rr.value)
+            if len(rrchaine) > 0:
+                return rrchaine, rrchaine[-1].type == 'A'
+            
+            # Authoritative DNS
+            rrchaine = []
+            cur_rr = find_first(self.rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
+            while cur_rr:
+                rrchaine.append(cur_rr)
+                cur_rr = find_first(self.rrs, lambda rr: rr.name == cur_rr.value)
+            if len(rrchaine) > 0:
+                return rrchaine, False
+            
+            # com TLD DNS
+            if comtld_rr := find_first(self.rrs, lambda rr: rr.name == config.comtld.name):
+                return [comtld_rr], False
+            
+            # Root DNS
+            if root_rr := find_first(self.rrs, lambda rr: rr.name == config.root.name):
+                return [root_rr], False
+            
+            return None, False
 
 def find_first(lst, cond):
     return next((item for item in lst if cond(item)), None)
@@ -61,16 +88,16 @@ def resolve_ip(rrs: list[RR], name: str, type: str) -> tuple[str, bool]:
     elif type == 'NS':
         cur_rr: RR = find_first(rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
 
-    result = []
+    rrchaine = []
     while cur_rr:
-        result.append(cur_rr)
+        rrchaine.append(cur_rr)
         cur_rr = find_first(rrs, lambda rr: rr.name == cur_rr.value)
 
-    if type == 'NS' and len(result) == 0:
+    if type == 'NS' and len(rrchaine) == 0:
         if cur_rr := find_first(rrs, lambda rr: rr.name == config.comtld.name) or \
             find_first(rrs, lambda rr: rr.name == config.root.name):
-            result.append(cur_rr)
+            rrchaine.append(cur_rr)
 
-    if len(result) == 0 or result[-1].type != 'A':
+    if len(rrchaine) == 0 or rrchaine[-1].type != 'A':
         return None, False
-    return result[-1].value, True
+    return rrchaine[-1].value, True
