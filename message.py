@@ -1,20 +1,25 @@
 import copy
 import pickle
 
+import cache
+
 class Message:
     def __init__(self, name=None, recur_desire=True):
-        # todo: 생성자 인자, message 필드...
         self.message = {
             'query': name,
             'recur_desire': recur_desire,
-            # 'recur_avaliable' ,
             'answer': [],
-            'logs': [], # reply를 보낼 때 마다 config statement의 server를 추가
+            'logs': [],
         }
 
     def copy(self):
         message = Message()
         message.message = copy.deepcopy(self.message)
+        return message
+    
+    def to_query(self):
+        message = self.copy()
+        message.message['answer'] = []
         return message
 
     def encode(self):
@@ -39,19 +44,19 @@ class Message:
     def recur_available(self):
         return self.message.get('recur_available')
     
+    @property
+    def answer(self):
+        return self.message.get('answer')
+    
     @recur_available.setter
     def recur_available(self, value):
         if isinstance(value, bool): self.message['recur_available'] = value
 
-    def add_answer(self, rr):
-        self.message['answer'].append(rr)
+    def add_answer(self, *rrs):
+        for rr in rrs: self.message.get('answer').append(rr)
     
     def __str__(self):
-        try:
-            resolved_ip = next(rr.ip for rr in self.message.get('answer') \
-                               if rr.type == 'A')
-        except StopIteration:
-            resolved_ip = None
+        resolved_ip, _ = cache.find_a_ip(self.message.get('answer'), self.message.get('query')) 
         return \
             f'{self.message.get("query")} : {resolved_ip}' + '\n' + \
             f'(via: {" -> ".join(self.message.get("logs"))})'
