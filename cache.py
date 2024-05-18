@@ -80,48 +80,31 @@ class Cache:
             
             return None, False
 
-def find_a_ip(rrs: list[RR], name: str) -> tuple[str, bool]:
-    try:
-        cname = next(rr.value for rr in rrs if rr.name == name and rr.type == 'CNAME')
-    except StopIteration:
-        cname = None
-    if cname is not None: name = cname
-    try:
-        ip = next(rr.value for rr in rrs if rr.name == name and rr.type == 'A')
-    except StopIteration:
-        return None, False
-    return ip, True
-
-def find_ns_ip(rrs: list[RR], name: str) -> tuple[str, bool]:
-    # resolve authoritative dns
-    domain_name = re.search(r'([a-zA-Z0-9\-]*\.com)', name).string
-    try:
-        ns_ip = next(rr.value for rr in rrs \
-                     if re.match(rf'[a-zA-Z0-9\-]*\.{domain_name}$', rr.name) and rr.type == 'NS')
-    except StopIteration:
-        ns_ip = None
-    if ns_ip: return ns_ip, True
-
-    # resolve comtld dns
-    try:
-        ns_ip = next(rr.value for rr in rrs \
-                     if rr.name == config.comtld.name)
-    except StopIteration:
-        ns_ip = None
-    if ns_ip: return ns_ip, True
-
-    # resolve root dns
-    try:
-        ns_ip = next(rr.value for rr in rrs \
-                     if rr.name == config.root.name)
-    except StopIteration:
-        return None, False
-    
-    return ns_ip, True
-
 def all_company_dns() -> list[RR]:
         rrs = []
         for stmt in config.company_servers:
             rrs.append(RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
             rrs.append(RR(stmt.name, stmt.ip, 'A'))
         return rrs
+
+def resolve_ip(rrs: list[RR], name: str, type: str) -> tuple[str, bool]:
+    if type == 'A':
+        cur_rr: RR = find_first(rrs, lambda rr: rr.name == name and rr.type == 'CNAME')
+        if not cur_rr:
+            cur_rr: RR = find_first(rrs, lambda rr: rr.name == name and rr.type == 'A')
+    elif type == 'NS':
+        cur_rr: RR = find_first(rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
+
+    result = []
+    while cur_rr:
+        result.append(cur_rr)
+        cur_rr = find_first(rrs, lambda rr: rr.name == cur_rr.value)
+
+    if type == 'NS' and len(result) == 0:
+        if cur_rr := find_first(rrs, lambda rr: rr.name == config.comtld.name) or \
+            find_first(rrs, lambda rr: rr.name == config.root.name):
+            result.append(cur_rr)
+
+    if len(result) == 0 or result[-1].type != 'A':
+        return None, False
+    return result[-1].value, True
