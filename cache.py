@@ -25,8 +25,8 @@ class Cache:
         with open(filepath, 'r') as file:
             pattern = re.compile(r'([a-zA-Z0-9][a-zA-Z0-9\-\.]*),(\d+\.\d+\.\d+\.\d+|[a-zA-Z0-9][a-zA-Z0-9\-\.]*),(A|NS|CNAME)')
             for line in file.readlines():
-                match = pattern.match(re.sub(r'\s+', '', line))
-                self.rrs.append(RR(*match.groups()))
+                if match := pattern.match(re.sub(r'\s+', '', line)):
+                    self.rrs.append(RR(*match.groups()))
 
     def add_rr(self, *rrs):
         with self.lock:

@@ -78,7 +78,7 @@ config = Config()
 with open(CONFIG_FILEPATH, 'r') as file:
     statement_pattern = re.compile(r'^([a-zA-Z0-9][a-zA-Z0-9\-]*)_dns_server=\[([a-zA-Z0-9][a-zA-Z0-9\-\.]*),(\d+\.\d+\.\d+\.\d+)\](\d+)$')
     for line in file.readlines():
-        match = statement_pattern.match(re.sub(r'\s+', '', line))
-        config.append(Statement(*match.groups()))
-        if (server := match.group(1)) not in ['local', 'root', 'comTLD']:
-            config.company_servers.append(server)
+        if match := statement_pattern.match(re.sub(r'\s+', '', line)):
+            config.append(Statement(*match.groups()))
+            if (server := match.group(1)) not in ['local', 'root', 'comTLD']:
+                config.company_servers.append(server)

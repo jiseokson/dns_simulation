@@ -19,6 +19,5 @@ if __name__ == '__main__':
     pattern = re.compile(r'^\s*cache\s*$')
     while True:
         prompt = input('>>> ')
-        match = pattern.match(prompt)
-        if match is None: continue
-        rrcache.logs()
+        if match := pattern.match(prompt):
+            rrcache.logs()
