@@ -26,8 +26,8 @@ if __name__ == '__main__':
             command = match.group(1)
             match command:
                 case 'on':
-                    recur_flag.set(False)
-                case 'off':
                     recur_flag.set(True)
+                case 'off':
+                    recur_flag.set(False)
 
 
