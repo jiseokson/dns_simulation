@@ -39,35 +39,7 @@ class Cache:
 
     def resolve(self, name) -> tuple[list[RR], bool]:
         with self.lock:
-            # A type RR
-            rrchaine = []
-            cur_rr = \
-                find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
-                find_first(self.rrs, lambda rr: rr.name == name and rr.type == 'A')
-            while cur_rr:
-                rrchaine.append(cur_rr)
-                cur_rr = find_first(self.rrs, lambda rr: rr.name == cur_rr.value)
-            if len(rrchaine) > 0:
-                return rrchaine, rrchaine[-1].type == 'A'
-            
-            # Authoritative DNS
-            rrchaine = []
-            cur_rr = find_first(self.rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
-            while cur_rr:
-                rrchaine.append(cur_rr)
-                cur_rr = find_first(self.rrs, lambda rr: rr.name == cur_rr.value)
-            if len(rrchaine) > 0:
-                return rrchaine, False
-            
-            # com TLD DNS
-            if comtld_rr := find_first(self.rrs, lambda rr: rr.name == config.comtld.name):
-                return [comtld_rr], False
-            
-            # Root DNS
-            if root_rr := find_first(self.rrs, lambda rr: rr.name == config.root.name):
-                return [root_rr], False
-            
-            return None, False
+            return resolve(self.rrs, name)
 
 def find_first(lst, cond):
     return next((item for item in lst if cond(item)), None)
@@ -79,6 +51,36 @@ def all_company_dns() -> list[RR]:
             rrs.append(RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
             rrs.append(RR(stmt.name, stmt.ip, 'A'))
         return rrs
+
+def resolve(rrs: list[RR], name: str) -> list[RR]:
+    rrchaine = []
+    cur_rr = \
+        find_first(rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
+        find_first(rrs, lambda rr: rr.name == name and rr.type == 'A')
+    while cur_rr:
+        rrchaine.append(cur_rr)
+        cur_rr = find_first(rrs, lambda rr: rr.name == cur_rr.value)
+    if len(rrchaine) > 0:
+        return rrchaine, rrchaine[-1].type == 'A'
+    
+    # Authoritative DNS
+    rrchaine = []
+    cur_rr = find_first(rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
+    while cur_rr:
+        rrchaine.append(cur_rr)
+        cur_rr = find_first(rrs, lambda rr: rr.name == cur_rr.value)
+    if len(rrchaine) > 0:
+        return rrchaine, False
+    
+    # com TLD DNS
+    if comtld_rr := find_first(rrs, lambda rr: rr.name == config.comtld.name):
+        return [comtld_rr], False
+    
+    # Root DNS
+    if root_rr := find_first(rrs, lambda rr: rr.name == config.root.name):
+        return [root_rr], False
+    
+    return None, False
 
 def resolve_ip(rrs: list[RR], name: str, type: str) -> tuple[str, bool]:
     if type == 'A':
