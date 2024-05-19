@@ -44,7 +44,7 @@ class Cache:
 def find_first(lst, cond):
     return next((item for item in lst if cond(item)), None)
 
-def resolve(rrs: list[RR], name: str) -> list[RR]:
+def resolve(rrs: list[RR], name: str) -> tuple[list[RR], bool]:
     # A type RR
     rrchaine = []
     cur_rr = \
