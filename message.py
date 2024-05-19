@@ -12,6 +12,13 @@ class Message:
             'logs': [],
         }
 
+    def __str__(self):
+        ip, _ = cache.resolve_ip(self.message.get('answer'), self.message.get('query'), 'A')
+        return \
+            f'{self.message.get("query")} : {ip}' + '\n' + \
+            f'(via: {" -> ".join(pretty_server_name(server) \
+                                 for server in self.message.get("logs"))})'
+
     def copy(self):
         message = Message()
         message.message = copy.deepcopy(self.message)
@@ -46,13 +53,6 @@ class Message:
     @property
     def answer(self):
         return self.message.get('answer')
-
-    def __str__(self):
-        ip, _ = cache.resolve_ip(self.message.get('answer'), self.message.get('query'), 'A')
-        return \
-            f'{self.message.get("query")} : {ip}' + '\n' + \
-            f'(via: {" -> ".join(pretty_server_name(server) \
-                                 for server in self.message.get("logs"))})'
 
 def query(name, recur_desire):
     return Message(name, recur_desire)
