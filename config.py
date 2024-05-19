@@ -1,3 +1,4 @@
+import os
 import re
 
 CONFIG_FILEPATH = './config.txt'
@@ -70,7 +71,7 @@ def extract_domain_name(name):
     return None
 
 def extract_company(filepath):
-    if match := re.match(r'^(.*)\.txt$', filepath):
+    if match := re.match(r'^(.*)\.txt$', os.path.basename(filepath)):
         return match.group(1)
     return None
 
