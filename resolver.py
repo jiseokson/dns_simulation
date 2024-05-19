@@ -35,5 +35,5 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                 if is_caching:
                     rrcache.append(*reply.answer)
 
-            reply.add_log(config.local.server)
+            reply.add_log(server)
             udp_socket.sendto(reply.encode(), address)
