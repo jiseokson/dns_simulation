@@ -2,6 +2,7 @@ import sys
 import re
 import threading
 
+from config import config
 from config import extract_company
 import cache
 import flag
@@ -12,9 +13,10 @@ if __name__ == '__main__':
     rrcache = cache.Cache(filepath=filepath)
     recur_flag = flag.Flag(False)
 
+    server = extract_company(filepath)
     worker_thread = threading.Thread( \
         target=resolver.resolver, \
-        args=[rrcache, recur_flag, False, extract_company(filepath), int(sys.argv[1])])
+        args=[rrcache, recur_flag, False, server, config.find_by_server(server).port])
     worker_thread.start()
 
     cache_pattern = re.compile(r'^\s*cache\s*$')
