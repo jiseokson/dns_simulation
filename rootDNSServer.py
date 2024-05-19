@@ -24,10 +24,12 @@ if __name__ == '__main__':
             rrcache.logs()
         elif match := recur_flag_pattern.match(prompt):
             command = match.group(1)
-            match command:
-                case 'on':
-                    recur_flag.set(True)
-                case 'off':
-                    recur_flag.set(False)
+            if command == 'on':
+                recur_flag.set(True)
+                print('recursive processing : on')
+            elif command == 'off':
+                recur_flag.set(False)
+                print('recursive processing : off')
+
 
 
