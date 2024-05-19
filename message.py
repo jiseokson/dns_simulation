@@ -30,7 +30,7 @@ class Message:
 
     def add_answer(self, *rrs):
         for rr in rrs: self.message.get('answer').append(rr)
-    
+
     @property
     def name(self):
         return self.message.get('query')
@@ -51,7 +51,8 @@ class Message:
         ip, _ = cache.resolve_ip(self.message.get('answer'), self.message.get('query'), 'A')
         return \
             f'{self.message.get("query")} : {ip}' + '\n' + \
-            f'(via: {" -> ".join(self.message.get("logs"))})'
+            f'(via: {" -> ".join(pretty_server_name(server) \
+                                 for server in self.message.get("logs"))})'
 
 def query(name, recur_desire):
     return Message(name, recur_desire)
@@ -60,3 +61,10 @@ def decode(bytes) -> Message:
     message = Message()
     message.message = pickle.loads(bytes)
     return message
+
+def pretty_server_name(server):
+    if server in ['local', 'root']:
+        return server + ' DNS server'
+    if server == 'comTLD':
+        return '.com TLD DNS server'
+    return server + '.com DNS server'
