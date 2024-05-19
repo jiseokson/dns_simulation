@@ -6,9 +6,17 @@ import cache
 import flag
 import resolver
 
+def all_company_dns() -> list[cache.RR]:
+    rrs = []
+    for server in config.company_servers:
+        stmt = cache.find_first(config.statements, lambda stmt: stmt.server == server)
+        rrs.append(cache.RR(cache.extract_domain_name(stmt.name), stmt.name, 'NS'))
+        rrs.append(cache.RR(stmt.name, stmt.ip, 'A'))
+    return rrs
+
 if __name__ == '__main__':
     rrcache = cache.Cache()
-    rrcache.append(*cache.all_company_dns())
+    rrcache.append(*all_company_dns())
     recur_flag = flag.Flag(False)
 
     worker_thread = threading.Thread( \

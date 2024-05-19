@@ -44,14 +44,6 @@ class Cache:
 def find_first(lst, cond):
     return next((item for item in lst if cond(item)), None)
 
-def all_company_dns() -> list[RR]:
-        rrs = []
-        for server in config.company_servers:
-            stmt = find_first(config.statements, lambda stmt: stmt.server == server)
-            rrs.append(RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
-            rrs.append(RR(stmt.name, stmt.ip, 'A'))
-        return rrs
-
 def resolve(rrs: list[RR], name: str) -> list[RR]:
     rrchaine = []
     cur_rr = \
