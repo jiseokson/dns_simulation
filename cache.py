@@ -73,7 +73,7 @@ def resolve(rrs: list[RR], name: str) -> tuple[list[RR], bool]:
     if root_rr := find_first(rrs, lambda rr: rr.name == config.root.name):
         return [root_rr], False
     
-    return None, False
+    return [], False
 
 def resolve_ip(rrs: list[RR], name: str, type: str) -> tuple[str, bool]:
     if type == 'A':
