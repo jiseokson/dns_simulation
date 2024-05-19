@@ -45,6 +45,7 @@ def find_first(lst, cond):
     return next((item for item in lst if cond(item)), None)
 
 def resolve(rrs: list[RR], name: str) -> list[RR]:
+    # A type RR
     rrchaine = []
     cur_rr = \
         find_first(rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
