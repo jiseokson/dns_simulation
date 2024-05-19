@@ -16,7 +16,7 @@ def all_company_dns() -> list[cache.RR]:
 
 if __name__ == '__main__':
     rrcache = cache.Cache()
-    rrcache.append(*all_company_dns())
+    rrcache.add_rr(*all_company_dns())
     recur_flag = flag.Flag(False)
 
     worker_thread = threading.Thread( \

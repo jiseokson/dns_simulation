@@ -41,7 +41,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                 rrs = reply.answer
 
                 if is_caching:
-                    rrcache.append(*rrs)
+                    rrcache.add_rr(*rrs)
 
                 rrchaine, is_resolved = cache.resolve(rrs, recevied_query.name)
                 if is_resolved:

@@ -28,7 +28,7 @@ class Cache:
                 match = pattern.match(re.sub(r'\s+', '', line))
                 self.rrs.append(RR(*match.groups()))
 
-    def append(self, *rrs):
+    def add_rr(self, *rrs):
         with self.lock:
             for rr in rrs:
                 if rr not in self.rrs: self.rrs.append(rr)
