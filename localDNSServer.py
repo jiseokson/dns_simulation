@@ -8,6 +8,7 @@ import resolver
 
 if __name__ == '__main__':
     rrcache = cache.Cache()
+    rrcache.add_rr(cache.RR('', config.root.name, 'NS'))
     rrcache.add_rr(cache.RR(config.root.name, config.root.ip, 'A'))
     recur_flag = flag.Flag(True)
 

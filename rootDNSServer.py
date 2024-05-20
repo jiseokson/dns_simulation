@@ -8,7 +8,8 @@ import resolver
 
 if __name__ == '__main__':
     rrcache = cache.Cache()
-    rrcache.add_rr(cache.RR(config.comtld.name, config.comtld.ip, 'A'))
+    rrcache.add_rr(cache.RR('com', config.comtld.name, 'NS'))
+    rrcache.add_rr(cache.RR('', config.comtld.ip, 'A'))
     recur_flag = flag.Flag(False)
 
     worker_thread = threading.Thread( \
