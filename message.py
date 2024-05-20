@@ -15,7 +15,11 @@ class Message:
         }
 
     def __str__(self):
-        ip, _ = cache.resolve_ip(self.message.get('answer'), self.message.get('query'), 'A')
+        ip, _ = cache.resolve_ip( \
+            self.message.get('query'), 'A', \
+            self.message.get('answer'), \
+            self.message.get('authority'), \
+            self.message.get('additional'))
         return \
             f'{self.message.get("query")} : {ip}' + '\n' + \
             f'(via: {" -> ".join(pretty_server_name(server) \
