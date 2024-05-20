@@ -28,7 +28,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
 
             # Querying
             while querying:
-                ns_ip = cache.resolve_ip(recevied_query.name, 'NS', answer, authority, additional)
+                ns_ip = cache.resolve_ip(qname, 'NS', answer, authority, additional)
                 if not ns_ip:
                     break
 
