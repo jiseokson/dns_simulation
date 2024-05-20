@@ -1,5 +1,4 @@
 import sys
-import re
 import threading
 
 from config import config
@@ -7,6 +6,8 @@ from config import extract_company
 import cache
 import flag
 import resolver
+
+from regex import cache_command
 
 if __name__ == '__main__':
     filepath = sys.argv[2]
@@ -19,8 +20,7 @@ if __name__ == '__main__':
         args=[rrcache, recur_flag, False, server, config.find_by_server(server).port])
     worker_thread.start()
 
-    cache_pattern = re.compile(r'^\s*cache\s*$')
     while True:
         prompt = input('>>> ')
-        if match := cache_pattern.match(prompt):
+        if match := cache_command.match(prompt):
             rrcache.logs()

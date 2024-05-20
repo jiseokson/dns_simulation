@@ -1,10 +1,11 @@
-import re
 import threading
 
 from config import config
 import cache
 import flag
 import resolver
+
+from regex import cache_command, recur_flag_command
 
 def all_company_dns() -> list[cache.RR]:
     rrs = []
@@ -24,13 +25,11 @@ if __name__ == '__main__':
         args=[rrcache, recur_flag, False, config.comtld.server, config.comtld.port])
     worker_thread.start()
 
-    cache_pattern = re.compile(r'^\s*cache\s*$')
-    recur_flag_pattern = re.compile(r'^\s*recursiveFlag\s+(on|off)\s*$')
     while True:
         prompt = input('>>> ')
-        if match := cache_pattern.match(prompt):
+        if match := cache_command.match(prompt):
             rrcache.logs()
-        elif match := recur_flag_pattern.match(prompt):
+        elif match := recur_flag_command.match(prompt):
             command = match.group(1)
             if command == 'on':
                 recur_flag.set(True)

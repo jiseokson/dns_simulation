@@ -1,10 +1,11 @@
-import re
 import threading
 
 from config import config
 import cache
 import flag
 import resolver
+
+from regex import cache_command
 
 if __name__ == '__main__':
     rrcache = cache.Cache()
@@ -17,8 +18,7 @@ if __name__ == '__main__':
         args=[rrcache, recur_flag, True, config.local.server, config.local.port])
     worker_thread.start()
 
-    pattern = re.compile(r'^\s*cache\s*$')
     while True:
         prompt = input('>>> ')
-        if match := pattern.match(prompt):
+        if match := cache_command.match(prompt):
             rrcache.logs()

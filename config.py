@@ -1,6 +1,8 @@
 import os
 import re
 
+from regex import config_statement, domain_name, tld_name, company
+
 CONFIG_FILEPATH = './config.txt'
 
 class Statement:
@@ -62,29 +64,27 @@ class Config:
         if self.__comtld is None:
             self.__comtld = next(stmt for stmt in self.statements \
                                      if stmt.server == 'comTLD')
-        return self.__comtld
-    
+        return self.__comtld  
 
 def extract_domain_name(name):
-    if match := re.search(r'([^\.]*\.com)$', name):
+    if match := domain_name.search(name):
         return match.group(1)
     return None
 
 def extract_tld_name(name):
-    if match := re.search(r'([^\.]*)$', name):
+    if match := tld_name.search(name):
         return match.group(1)
     return None
 
 def extract_company(filepath):
-    if match := re.match(r'^(.*)\.txt$', os.path.basename(filepath)):
+    if match := company.match(os.path.basename(filepath)):
         return match.group(1)
     return None
 
 config = Config()
 with open(CONFIG_FILEPATH, 'r') as file:
-    statement_pattern = re.compile(r'^([a-zA-Z0-9][a-zA-Z0-9\-]*)_dns_server=\[([a-zA-Z0-9][a-zA-Z0-9\-\.]*),(\d+\.\d+\.\d+\.\d+)\](\d+)$')
     for line in file.readlines():
-        if match := statement_pattern.match(re.sub(r'\s+', '', line)):
+        if match := config_statement.match(re.sub(r'\s+', '', line)):
             config.append(Statement(*match.groups()))
             if (server := match.group(1)) not in ['local', 'root', 'comTLD']:
                 config.company_servers.append(server)

@@ -2,6 +2,7 @@ import re
 import threading
 
 from config import extract_domain_name, extract_tld_name
+from regex import cache_statement
 
 class RR:
     def __init__(self, name, value, type):
@@ -22,9 +23,8 @@ class Cache:
         self.rrs = []
         if filepath is None: return
         with open(filepath, 'r') as file:
-            pattern = re.compile(r'([a-zA-Z0-9][a-zA-Z0-9\-\.]*),(\d+\.\d+\.\d+\.\d+|[a-zA-Z0-9][a-zA-Z0-9\-\.]*),(A|NS|CNAME)')
             for line in file.readlines():
-                if match := pattern.match(re.sub(r'\s+', '', line)):
+                if match := cache_statement.match(re.sub(r'\s+', '', line)):
                     self.rrs.append(RR(*match.groups()))
 
     def add_rr(self, *rrs):
