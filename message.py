@@ -8,9 +8,9 @@ class Message:
         self.message = {
             'query': name,
             'recur_desire': recur_desire,
-            'answer': [],
-            'authority': [],
-            'additional': [],
+            'answer': None,
+            'authority': None,
+            'additional': None,
             'logs': [],
         }
 
@@ -28,9 +28,9 @@ class Message:
     
     def copy_to_query(self):
         message = self.copy()
-        message.message['answer'] = []
-        message.message['authority'] = []
-        message.message['additional'] = []
+        message.message['answer'] = None
+        message.message['authority'] = None
+        message.message['additional'] = None
         return message
 
     def encode(self):
@@ -38,15 +38,6 @@ class Message:
     
     def add_log(self, server):
         self.message['logs'].append(server)
-
-    def add_answer(self, *rrs):
-        for rr in rrs: self.message.get('answer').append(rr)
-
-    def add_authority(self, *rrs):
-        for rr in rrs: self.message.get('authority').append(rr)
-
-    def add_additional(self, *rrs):
-        for rr in rrs: self.message.get('additional').append(rr)
 
     @property
     def name(self):
@@ -64,13 +55,25 @@ class Message:
     def answer(self):
         return self.message.get('answer')
     
+    @answer.setter
+    def answer(self, rr):
+        if isinstance(rr, cache.RR): self.message['answer'] = rr
+    
     @property
     def authority(self):
         return self.message.get('authority')
     
+    @authority.setter
+    def authority(self, rr):
+        if isinstance(rr, cache.RR): self.message['authority'] = rr
+
     @property
     def additional(self):
         return self.message.get('additional')
+
+    @additional.setter
+    def additional(self, rr):
+        if isinstance(rr, cache.RR): self.message['additional'] = rr
 
 def query(name, recur_desire):
     return Message(name, recur_desire)
