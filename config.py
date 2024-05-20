@@ -70,6 +70,11 @@ def extract_domain_name(name):
         return match.group(1)
     return None
 
+def extract_tld_name(name):
+    if match := re.search(r'([^\.]*)$', name):
+        return match.group(1)
+    return None
+
 def extract_company(filepath):
     if match := re.match(r'^(.*)\.txt$', os.path.basename(filepath)):
         return match.group(1)
