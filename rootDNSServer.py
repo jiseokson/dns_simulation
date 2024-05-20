@@ -31,6 +31,3 @@ if __name__ == '__main__':
             elif command == 'off':
                 recur_flag.set(False)
                 print('recursive processing : off')
-
-
-

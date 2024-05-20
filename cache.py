@@ -1,7 +1,6 @@
 import re
 import threading
 
-from config import config
 from config import extract_domain_name, extract_tld_name
 
 class RR:
@@ -67,32 +66,11 @@ def resolve(name: str, rrs: list[RR]) -> tuple[RR|None, RR|None, RR|None]:
     
     return answer, authority, additional
 
-# todo: return type => ip|None
-def resolve_ip(name: str, type: str, answer: RR|None, authority: RR|None, additional: RR|None) -> tuple[str, bool]:
-    ### for mocking
-    rrs = []
-    if answer: rrs.append(answer)
-    if authority: rrs.append(authority)
-    if additional: rrs.append(additional)
-    ####
-
-    if type == 'A':
-        cur_rr: RR = \
-            find(rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
-            find(rrs, lambda rr: rr.name == name and rr.type == 'A')
-    elif type == 'NS':
-        cur_rr: RR = find(rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS')
-
-    rrchaine = []
-    while cur_rr:
-        rrchaine.append(cur_rr)
-        cur_rr = find(rrs, lambda rr: rr.name == cur_rr.value)
-
-    if type == 'NS' and len(rrchaine) == 0:
-        if cur_rr := find(rrs, lambda rr: rr.name == config.comtld.name) or \
-            find(rrs, lambda rr: rr.name == config.root.name):
-            rrchaine.append(cur_rr)
-
-    if len(rrchaine) == 0 or rrchaine[-1].type != 'A':
-        return None, False
-    return rrchaine[-1].value, True
+def resolve_ip(name: str, type: str, answer: RR|None, authority: RR|None, additional: RR|None) -> str|None:
+    if answer and answer.type == 'A':
+        return answer.value
+    if additional and \
+        (answer and (answer.value, answer.type) == (additional.name, 'CNAME')) or \
+        (authority and (authority.value, authority.type) == (additional.name, 'NS')):
+        return additional.value
+    return None
