@@ -9,6 +9,8 @@ class Message:
             'query': name,
             'recur_desire': recur_desire,
             'answer': [],
+            'authority': [],
+            'additional': [],
             'logs': [],
         }
 
@@ -27,6 +29,8 @@ class Message:
     def copy_to_query(self):
         message = self.copy()
         message.message['answer'] = []
+        message.message['authority'] = []
+        message.message['additional'] = []
         return message
 
     def encode(self):
@@ -37,6 +41,12 @@ class Message:
 
     def add_answer(self, *rrs):
         for rr in rrs: self.message.get('answer').append(rr)
+
+    def add_authority(self, *rrs):
+        for rr in rrs: self.message.get('authority').append(rr)
+
+    def add_additional(self, *rrs):
+        for rr in rrs: self.message.get('additional').append(rr)
 
     @property
     def name(self):
@@ -53,6 +63,14 @@ class Message:
     @property
     def answer(self):
         return self.message.get('answer')
+    
+    @property
+    def authority(self):
+        return self.message.get('authority')
+    
+    @property
+    def additional(self):
+        return self.message.get('additional')
 
 def query(name, recur_desire):
     return Message(name, recur_desire)
