@@ -14,20 +14,21 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
             recevied_query = message.decode(recevied_query_bytes)
             reply = recevied_query.copy()
 
-            is_query_from_root = (config.root.port == address[1])
             querying = True
+            qname = recevied_query.name
+            is_query_from_root = (config.root.port == address[1])
 
             # Cache resolve
-            rrs, is_resolved = rrcache.resolve(recevied_query.name)
-            if is_resolved or \
+            answer, authority, additional = rrcache.resolve(qname)
+            if answer or \
                 not recevied_query.recur_desire or \
                 not (recur_flag.value or is_query_from_root):
-                reply.add_answer(*rrs)
+                reply.sections = answer, authority, additional
                 querying = False
 
             # Querying
             while querying:
-                ns_ip, is_ns_resolved = cache.resolve_ip(rrs, recevied_query.name, 'NS')
+                ns_ip, is_ns_resolved = cache.resolve_ip(recevied_query.name, 'NS', answer, authority, additional)
                 if not is_ns_resolved:
                     break
 
@@ -38,14 +39,13 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                 udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
                 reply_bytes, _ = udp_socket.recvfrom(4092)
                 reply = message.decode(reply_bytes)
-                rrs = reply.answer
+                answer, authority, additional = reply.sections
 
                 if is_caching:
-                    rrcache.add_rr(*rrs)
+                    rrcache.add_rr(answer, authority, additional)
 
-                rrchaine, is_resolved = cache.resolve(rrs, recevied_query.name)
-                if is_resolved:
-                    reply.add_answer(*rrchaine)
+                if answer:
+                    break
 
             reply.add_log(server)
             udp_socket.sendto(reply.encode(), address)

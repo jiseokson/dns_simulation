@@ -61,7 +61,7 @@ class Message:
     
     @answer.setter
     def answer(self, rr):
-        if isinstance(rr, cache.RR): self.message['answer'] = rr
+        if isinstance(rr, cache.RR) or rr is None: self.message['answer'] = rr
     
     @property
     def authority(self):
@@ -69,7 +69,7 @@ class Message:
     
     @authority.setter
     def authority(self, rr):
-        if isinstance(rr, cache.RR): self.message['authority'] = rr
+        if isinstance(rr, cache.RR) or rr is None: self.message['authority'] = rr
 
     @property
     def additional(self):
@@ -77,7 +77,18 @@ class Message:
 
     @additional.setter
     def additional(self, rr):
-        if isinstance(rr, cache.RR): self.message['additional'] = rr
+        if isinstance(rr, cache.RR) or rr is None: self.message['additional'] = rr
+
+    @property
+    def sections(self) -> tuple[cache.RR|None, cache.RR|None, cache.RR|None]:
+        return self.answer, self.authority, self.additional
+    
+    @sections.setter
+    def sections(self, obj):
+        if isinstance(obj, tuple) and len(obj) == 3:
+            if isinstance(obj[0], cache.RR) or obj[0] is None: self.answer = obj[0]
+            if isinstance(obj[1], cache.RR) or obj[1] is None: self.authority = obj[1]
+            if isinstance(obj[2], cache.RR) or obj[2] is None: self.additional = obj[2]
 
 def query(name, recur_desire):
     return Message(name, recur_desire)
