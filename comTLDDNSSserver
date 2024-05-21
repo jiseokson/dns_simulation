@@ -37,10 +37,10 @@ if __name__ == '__main__':
     rrcache.add_rr(*all_company_dns())
     recur_flag = flag.Flag(False)
 
-    worker_thread = threading.Thread( \
+    resolver_thread = threading.Thread( \
         target=resolver.resolver, \
         args=[rrcache, recur_flag, False, config.comtld.server, config.comtld.port])
-    worker_thread.start()
+    resolver_thread.start()
 
     while True:
         prompt = input('>>> ')

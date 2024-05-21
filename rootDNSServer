@@ -30,10 +30,10 @@ if __name__ == '__main__':
     rrcache.add_rr(cache.RR(config.comtld.name, config.comtld.ip, 'A'))
     recur_flag = flag.Flag(False)
 
-    worker_thread = threading.Thread( \
+    resolver_thread = threading.Thread( \
         target=resolver.resolver, \
         args=[rrcache, recur_flag, False, config.root.server, config.root.port])
-    worker_thread.start()
+    resolver_thread.start()
 
     while True:
         prompt = input('>>> ')

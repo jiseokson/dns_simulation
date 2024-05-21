@@ -35,10 +35,10 @@ if __name__ == '__main__':
     rrcache = cache.Cache(filepath=filepath)
     recur_flag = flag.Flag(False)
 
-    worker_thread = threading.Thread( \
+    resolver_thread = threading.Thread( \
         target=resolver.resolver, \
         args=[rrcache, recur_flag, False, server, config.find_by_server(server).port])
-    worker_thread.start()
+    resolver_thread.start()
 
     while True:
         prompt = input('>>> ')
