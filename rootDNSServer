@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import threading
 
 from config import config
@@ -10,6 +11,20 @@ import resolver
 from regex import cache_command, recur_flag_command
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print(f'usage: rootDNSServer port', file=sys.stderr)
+        sys.exit(1)
+    try:
+        port = int(sys.argv[1])
+    except:
+        print(f'error: invalid port number: {sys.argv[1]}', file=sys.stderr)
+        sys.exit(1)
+    if port != config.root.port:
+        print(f'error: port number mismatch between configuration file and argument', file=sys.stderr)
+        print(f'  given by configuration file: {config.root.port}')
+        print(f'  given by argument:           {port}')
+        sys.exit(1)
+
     rrcache = cache.Cache()
     rrcache.add_rr(cache.RR('com', config.comtld.name, 'NS'))
     rrcache.add_rr(cache.RR(config.comtld.name, config.comtld.ip, 'A'))

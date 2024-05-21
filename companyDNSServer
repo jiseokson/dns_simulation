@@ -3,8 +3,7 @@
 import sys
 import threading
 
-from config import config
-from config import extract_company
+from config import config, extract_company
 import cache
 import flag
 import resolver
@@ -12,11 +11,30 @@ import resolver
 from regex import cache_command
 
 if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print(f'usage: companyDNSServer port cache', file=sys.stderr)
+        sys.exit(1)
+
     filepath = sys.argv[2]
+    server = extract_company(filepath)
+    if not config.find_by_server(server):
+        print(f'error: unable to find \'{server}\' in configuration file', file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        port = int(sys.argv[1])
+    except:
+        print(f'error: invalid port number: {sys.argv[1]}', file=sys.stderr)
+        sys.exit(1)
+    if port != config.find_by_server(server).port:
+        print(f'error: port number mismatch between configuration file and argument', file=sys.stderr)
+        print(f'  given by configuration file: {config.find_by_server(server).port}')
+        print(f'  given by argument:           {port}')
+        sys.exit(1)
+
     rrcache = cache.Cache(filepath=filepath)
     recur_flag = flag.Flag(False)
 
-    server = extract_company(filepath)
     worker_thread = threading.Thread( \
         target=resolver.resolver, \
         args=[rrcache, recur_flag, False, server, config.find_by_server(server).port])

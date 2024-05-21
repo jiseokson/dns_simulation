@@ -29,7 +29,7 @@ class Config:
     def append_company(self, server):
         self.company_servers.append(server)
 
-    def find_by_server(self, server) -> Statement:
+    def find_by_server(self, server) -> Statement|None:
         try:
             stmt = next(stmt for stmt in self.statements \
                         if stmt.server == server)

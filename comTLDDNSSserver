@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import threading
 
 from config import config
@@ -10,6 +11,20 @@ import resolver
 from regex import cache_command, recur_flag_command
 
 def all_company_dns() -> list[cache.RR]:
+    if len(sys.argv) != 2:
+        print(f'usage: comTLDDNSServer port', file=sys.stderr)
+        sys.exit(1)
+    try:
+        port = int(sys.argv[1])
+    except:
+        print(f'error: invalid port number: {sys.argv[1]}', file=sys.stderr)
+        sys.exit(1)
+    if port != config.comtld.port:
+        print(f'error: port number mismatch between configuration file and argument', file=sys.stderr)
+        print(f'  given by configuration file: {config.comtld.port}')
+        print(f'  given by argument:           {port}')
+        sys.exit(1)
+
     rrs = []
     for server in config.company_servers:
         stmt = cache.find(config.statements, lambda stmt: stmt.server == server)
