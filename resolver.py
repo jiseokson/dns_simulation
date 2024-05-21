@@ -3,7 +3,6 @@ import socket
 from config import config
 import cache
 import message
-
 import flag
 
 def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, server: str, port: int):
@@ -33,7 +32,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                     break
 
                 query = reply.copy_to_query()
-                query.recur_desire = recur_flag.value or is_query_from_root
+                query.recur_desire = recur_flag.value
                 query.add_log(server)
 
                 udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
