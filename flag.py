@@ -5,11 +5,13 @@ class Flag:
         self.lock = threading.Lock()
         self.__value = init
 
-    def set(self, value):
-        with self.lock:
-            self.__value = value
-
     @property
     def value(self):
         with self.lock:
             return self.__value
+        
+    @value.setter
+    def value(self, obj):
+        if isinstance(obj, bool):
+            with self.lock:
+                self.__value = obj

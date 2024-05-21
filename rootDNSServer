@@ -42,8 +42,8 @@ if __name__ == '__main__':
         elif match := recur_flag_command.match(prompt):
             command = match.group(1)
             if command == 'on':
-                recur_flag.set(True)
+                recur_flag.value = True
                 print('recursive processing : on')
             elif command == 'off':
-                recur_flag.set(False)
+                recur_flag.value = False
                 print('recursive processing : off')
