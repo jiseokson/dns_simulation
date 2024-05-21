@@ -14,7 +14,7 @@ Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로�
 
   - 실행 스크립트(`client`, `localDNSServer`, `rootDNSServer`, `comTLDDNSServer`, `companyDNSServer`) 파일에 실행 권한이 부여되었는지
   - shebang이 운영체제에 의해서 지원 가능한지
-  - `python` 버전이 해당 프로젝트 실행을 지원하는지
+  - `python` 버전이 해당 프로젝트의 실행을 지원하는지
   - 설정 파일(`config.txt`와 각 회사의 RR cache 파일)과 프로그램 실행 인자가 올바른지
 
 등을 확인해야 한다.
