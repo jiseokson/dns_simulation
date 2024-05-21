@@ -32,7 +32,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                     break
 
                 query = reply.copy_to_query()
-                query.recur_desire = recur_flag.value
+                query.recur_desire = True
                 query.add_log(server)
 
                 udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
