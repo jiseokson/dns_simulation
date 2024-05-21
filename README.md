@@ -26,7 +26,7 @@ Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로�
   - `config.txt`
     ```
     local_dns_server = [dns.dreamnet.com, 100.100.100.100] 20001
-    root_dns_server = [dns.rootDSNService.com, 57.32.9.101] 20002
+    root_dns_server = [dns.rootDNSService.com, 57.32.9.101] 20002
     comTLD_dns_server = [dns.comTLDDNSService.com, 30.10.2.102] 20003
     abc_dns_server = [dns.abc.com, 77.108.19.103] 30000
     gogle_dns_server = [dns.gogle.com, 17.134.2.204] 30001
