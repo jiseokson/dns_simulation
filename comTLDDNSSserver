@@ -11,6 +11,14 @@ import resolver
 from regex import cache_command, recur_flag_command
 
 def all_company_dns() -> list[cache.RR]:
+    rrs = []
+    for server in config.company_servers:
+        stmt = cache.find(config.statements, lambda stmt: stmt.server == server)
+        rrs.append(cache.RR(cache.extract_domain_name(stmt.name), stmt.name, 'NS'))
+        rrs.append(cache.RR(stmt.name, stmt.ip, 'A'))
+    return rrs
+
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print(f'usage: comTLDDNSServer port', file=sys.stderr)
         sys.exit(1)
@@ -25,14 +33,6 @@ def all_company_dns() -> list[cache.RR]:
         print(f'  given by argument:           {port}')
         sys.exit(1)
 
-    rrs = []
-    for server in config.company_servers:
-        stmt = cache.find(config.statements, lambda stmt: stmt.server == server)
-        rrs.append(cache.RR(cache.extract_domain_name(stmt.name), stmt.name, 'NS'))
-        rrs.append(cache.RR(stmt.name, stmt.ip, 'A'))
-    return rrs
-
-if __name__ == '__main__':
     rrcache = cache.Cache()
     rrcache.add_rr(*all_company_dns())
     recur_flag = flag.Flag(False)
