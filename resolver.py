@@ -9,7 +9,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as udp_socket:
         udp_socket.bind(('', port))
         while True:
-            recevied_query_bytes, address = udp_socket.recvfrom(4092)
+            recevied_query_bytes, address = udp_socket.recvfrom(4096)
             recevied_query = message.decode(recevied_query_bytes)
             reply = recevied_query.copy()
 
@@ -36,7 +36,7 @@ def resolver(rrcache: cache.Cache, recur_flag: flag.Flag, is_caching: bool, serv
                 query.add_log(server)
 
                 udp_socket.sendto(query.encode(), ('', config.resolve_port(ns_ip)))
-                reply_bytes, _ = udp_socket.recvfrom(4092)
+                reply_bytes, _ = udp_socket.recvfrom(4096)
                 reply = message.decode(reply_bytes)
                 answer, authority, additional = reply.sections
 

@@ -26,6 +26,6 @@ if __name__ == '__main__':
                 name = match.group(1)
                 query = message.query(name, recur_desire=True)
                 udp_socket.sendto(query.encode(), ('', config.local.port))
-                reply_bytes, _ = udp_socket.recvfrom(4092)
+                reply_bytes, _ = udp_socket.recvfrom(4096)
                 reply = message.decode(reply_bytes)
                 print(reply)
