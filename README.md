@@ -65,6 +65,10 @@ $ ./companyDNSServer 30001 gogle.txt
   - ### com TLD DNS Server만 recursive query를 수락하는 경우
     com TLD DNS server 이후로 recursive query가 수행되는 모습을 확인할 수 있다.
     ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/0da57259-c500-425e-abb5-b2cc53e4b17c)
+  - ### Authoritative DNS Server의 정보가 caching된 경우
+    첫 번째 query `www.abc.com`을 해결하는 과정 중에 Local DNS Server에는 `abc.com`의 Authoritative DNS Server의 정보가 caching 되었다. 따라서 두 번째 query `ftp.abc.com`은 상위 DNS Server에 query할 필요없이 바로 `abc.com`의 Authoritavie DNS Server에 query가 가능하다.
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/b431250d-cf23-4020-9d8b-50cfd0c70964)
+
 
 
 
