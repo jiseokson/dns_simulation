@@ -38,33 +38,30 @@ class Cache:
 
     def resolve(self, name) -> tuple[RR|None, RR|None, RR|None]:
         with self.lock:
-            return resolve(name, self.rrs)
+            # Answer section
+            answer: RR|None = \
+                find(self.rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
+                find(self.rrs, lambda rr: rr.name == name and rr.type == 'A') or \
+                None
+            
+            # Authority section
+            authority: RR|None = \
+                find(self.rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS') or \
+                find(self.rrs, lambda rr: rr.name == extract_tld_name(name) and rr.type == 'NS') or \
+                find(self.rrs, lambda rr: rr.name == '' and rr.type == 'NS') or \
+                None
+            
+            # Additional section
+            additional: RR|None = None
+            if answer:
+                additional = find(self.rrs, lambda rr: answer.value == rr.name)
+            elif authority:
+                additional = find(self.rrs, lambda rr: authority.value == rr.name)
+            
+            return answer, authority, additional
 
 def find(lst, condition):
     return next((item for item in lst if condition(item)), None)
-
-def resolve(name: str, rrs: list[RR]) -> tuple[RR|None, RR|None, RR|None]:
-    # Answer section
-    answer: RR|None = \
-        find(rrs, lambda rr: rr.name == name and rr.type == 'CNAME') or \
-        find(rrs, lambda rr: rr.name == name and rr.type == 'A') or \
-        None
-    
-    # Authority section
-    authority: RR|None = \
-        find(rrs, lambda rr: rr.name == extract_domain_name(name) and rr.type == 'NS') or \
-        find(rrs, lambda rr: rr.name == extract_tld_name(name) and rr.type == 'NS') or \
-        find(rrs, lambda rr: rr.name == '' and rr.type == 'NS') or \
-        None
-    
-    # Additional section
-    additional: RR|None = None
-    if answer:
-        additional = find(rrs, lambda rr: answer.value == rr.name)
-    elif authority:
-        additional = find(rrs, lambda rr: authority.value == rr.name)
-    
-    return answer, authority, additional
 
 def resolve_ip(name: str, type: str, answer: RR|None, authority: RR|None, additional: RR|None) -> str|None:
     if answer and answer.type == 'A':
