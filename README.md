@@ -45,3 +45,13 @@ Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로�
     www.gogle.com, machine1.gogle.com, CNAME
     media.gogle.com, machine2.gogle.com, CNAME
     ```
+
+실행 명령은 다음과 같다.
+```
+$ ./client 20000
+$ ./localDNSServer 20001
+$ ./rootDNSServer 20002
+$ ./comTLDDNSServer 20003
+$ ./companyDNSServer 30000 abc.txt
+$ ./companyDNSServer 30001 gogle.txt
+```
