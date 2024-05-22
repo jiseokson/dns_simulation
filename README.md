@@ -49,11 +49,11 @@ Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로�
 실행 명령은 다음과 같다.
 ```
 $ ./client 20000
-$ ./localDNSServer 20001
-$ ./rootDNSServer 20002
-$ ./comTLDDNSServer 20003
-$ ./companyDNSServer 30000 abc.txt
-$ ./companyDNSServer 30001 gogle.txt
+$ ./localDNSserver 20001
+$ ./rootDNSserver 20002
+$ ./comTLDDNSserver 20003
+$ ./companyDNSserver 30000 abc.txt
+$ ./companyDNSserver 30001 gogle.txt
 ```
 
   - ### Root DNS Server, com TLD DNS Server 모두 recursive query 수락하지 않는 경우
