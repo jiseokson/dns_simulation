@@ -55,3 +55,16 @@ $ ./comTLDDNSServer 20003
 $ ./companyDNSServer 30000 abc.txt
 $ ./companyDNSServer 30001 gogle.txt
 ```
+
+  - ### Root DNS Server, com TLD DNS Server 모두 recursive query 수락하지 않는 경우
+    Local DNS Server로부터 iterative query가 실행되는 모습을 확인할 수 있으며 qeury중 새로 알려진 RR이 Local DNS Server의 cache에 저장됨을 확인할 수 있다.
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/1b31b352-9a58-4a04-b26d-076941b2c6cb)
+  - ### Root DNS Server만 recursive query를 수락하는 경우
+    Root DNS Server가 Local DNS Server의 recursive query를 처리하기로 수락했으므로, Root DNS Server의 query를 수신받은 com TLD DNS Server는 자신의 recursive query 처리 여부와 상관없이 recursive query를 수행해야 한다. Recursive qeury가 수행되는 모습과 Local DNS Server에 최종적으로 알려진 `ftp.gogle.com`의 RR만 caching된 것을 확인할 수 있다. Root DNS Server와 com TLD DNS Server 모두 recursive query를 처리하도록 설정되어 있어도 같은 동작을 한다.
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/17c21491-e96e-4493-88b9-9408739791c1)
+  - ### com TLD DNS Server만 recursive query를 수락하는 경우
+    com TLD DNS server 이후로 recursive query가 수행되는 모습을 확인할 수 있다.
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/0da57259-c500-425e-abb5-b2cc53e4b17c)
+
+
+
