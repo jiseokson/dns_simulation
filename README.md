@@ -21,7 +21,7 @@ Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로�
 
 ## 테스트
 
-다음의 설정에서 `client`, `localDNSServer`, `rootDNSServer`, `comTLDDNSServer`와 `abc`, `gogle`이라는 회사 이름으로 `companyDNSServer`를 실행했다.
+다음의 설정에서 `client`, `localDNSserver`, `rootDNSserver`, `comTLDDNSserver`와 `abc`, `gogle`이라는 회사 이름으로 `companyDNSserver`를 실행했다.
 
   - `config.txt`
     ```
