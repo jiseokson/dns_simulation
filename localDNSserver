@@ -12,7 +12,7 @@ from regex import cache_command
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print(f'usage: localDNSServer port', file=sys.stderr)
+        print(f'usage: localDNSserver port', file=sys.stderr)
         sys.exit(1)
     try:
         port = int(sys.argv[1])

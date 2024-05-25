@@ -12,7 +12,7 @@ from regex import cache_command
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print(f'usage: companyDNSServer port cache', file=sys.stderr)
+        print(f'usage: companyDNSserver port cache', file=sys.stderr)
         sys.exit(1)
 
     filepath = sys.argv[2]
