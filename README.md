@@ -2,9 +2,12 @@
 
 Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로세스들이 UDP 통신을 통해 가상의 DNS 서비스를 시뮬레이션한다.
 
-<div style="display: flex; justify-content: space-between;">
-    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/696a9742-9703-4bec-aebc-7a9d9f9537cb" alt="Iterarive query" width="45%">
-    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/f8946326-dd63-4346-9b44-7cdee305a091" alt="Recursive query" width="45%">
+<div align="center">
+    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/696a9742-9703-4bec-aebc-7a9d9f9537cb" alt="Iterarive query" width="60%">
+    <p>Fig.1 - Recursice query</p>
+    </br>
+    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/f8946326-dd63-4346-9b44-7cdee305a091" alt="Recursive query" width="60%">
+    <p>Fig.2 - Iterative query</p>
 </div>
 
 ## 실행
