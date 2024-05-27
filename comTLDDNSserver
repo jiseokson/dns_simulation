@@ -3,7 +3,7 @@
 import sys
 import threading
 
-from config import config
+from config import config, extract_domain_name
 import cache
 import flag
 import resolver
@@ -14,7 +14,7 @@ def all_company_dns() -> list[cache.RR]:
     rrs = []
     for server in config.company_servers:
         stmt = cache.find(config.statements, lambda stmt: stmt.server == server)
-        rrs.append(cache.RR(cache.extract_domain_name(stmt.name), stmt.name, 'NS'))
+        rrs.append(cache.RR(extract_domain_name(stmt.name), stmt.name, 'NS'))
         rrs.append(cache.RR(stmt.name, stmt.ip, 'A'))
     return rrs
 
