@@ -2,9 +2,12 @@
 
 Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로세스들이 UDP 통신을 통해 가상의 DNS 서비스를 시뮬레이션한다.
 
-<div style="display: flex; justify-content: space-between;">
-    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/696a9742-9703-4bec-aebc-7a9d9f9537cb" alt="Iterarive query" width="45%">
-    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/f8946326-dd63-4346-9b44-7cdee305a091" alt="Recursive query" width="45%">
+<div align="center">
+    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/696a9742-9703-4bec-aebc-7a9d9f9537cb" alt="Iterarive query" width="60%">
+    <p>Fig.1 - Recursive query</p>
+    </br>
+    <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/f8946326-dd63-4346-9b44-7cdee305a091" alt="Recursive query" width="60%">
+    <p>Fig.2 - Iterative query</p>
 </div>
 
 ## 실행
@@ -58,16 +61,17 @@ $ ./companyDNSserver 30001 gogle.txt
 
   - ### Root DNS Server, com TLD DNS Server 모두 recursive query 수락하지 않는 경우
     Local DNS Server로부터 iterative query가 실행되는 모습을 확인할 수 있으며 qeury중 새로 알려진 RR이 Local DNS Server의 cache에 저장됨을 확인할 수 있다.
-    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/1b31b352-9a58-4a04-b26d-076941b2c6cb)
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/7a776fee-cf68-4240-9e5c-0ff5467675a4)
   - ### Root DNS Server만 recursive query를 수락하는 경우
     Root DNS Server가 Local DNS Server의 recursive query를 처리하기로 수락했으므로, Root DNS Server의 query를 수신받은 com TLD DNS Server는 자신의 recursive query 처리 여부와 상관없이 recursive query를 수행해야 한다. Recursive qeury가 수행되는 모습과 Local DNS Server에 최종적으로 알려진 `ftp.gogle.com`의 RR만 caching된 것을 확인할 수 있다. Root DNS Server와 com TLD DNS Server 모두 recursive query를 처리하도록 설정되어 있어도 같은 동작을 한다.
-    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/17c21491-e96e-4493-88b9-9408739791c1)
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/78974eac-4946-456a-8659-da8a3ea7f8e6)
   - ### com TLD DNS Server만 recursive query를 수락하는 경우
     com TLD DNS server 이후로 recursive query가 수행되는 모습을 확인할 수 있다.
-    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/0da57259-c500-425e-abb5-b2cc53e4b17c)
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/6b91481c-5519-44f6-bad6-61204b64b8c8)
   - ### Authoritative DNS Server의 정보가 caching된 경우
-    첫 번째 query `www.abc.com`을 해결하는 과정 중에 Local DNS Server에는 `abc.com`의 Authoritative DNS Server의 정보가 caching 되었다. 따라서 두 번째 query `ftp.abc.com`은 상위 DNS Server에 query할 필요없이 바로 `abc.com`의 Authoritavie DNS Server에 query가 가능하다.
-    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/b431250d-cf23-4020-9d8b-50cfd0c70964)
+    첫 번째 query `www.abc.com`을 해결하는 과정 중에 Local DNS Server에는 `abc.com`의 Authoritative DNS Server의 정보가 caching 되었다. 따라서 두 번째 query `ftp.abc.com`은 상위 DNS Server에 query할 필요없이 바로 `abc.com`의 Authoritavie DNS Server에 query가 가능하다. 또한 `www.abc.com`에 대한 query가 다시 도착했을 때 곧바로 reply하는 것을 확인할 수 있다.
+    ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/610ca279-0057-4368-85e2-ec7e78fb42c4)
+
 
 
 

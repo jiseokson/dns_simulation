@@ -20,7 +20,7 @@ def all_company_dns() -> list[cache.RR]:
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print(f'usage: comTLDDNSServer port', file=sys.stderr)
+        print(f'usage: comTLDDNSserver port', file=sys.stderr)
         sys.exit(1)
     try:
         port = int(sys.argv[1])
