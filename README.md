@@ -4,10 +4,10 @@ Name resolution을 요청하는 client와 DNS server의 역할을 하는 프로�
 
 <div align="center">
     <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/696a9742-9703-4bec-aebc-7a9d9f9537cb" alt="Iterarive query" width="60%">
-    <p>Fig.1 - Recursive query</p>
+    <p>Fig.1 - Iterative query</p>
     </br>
     <img src="https://github.com/jiseokson/dns_simulation/assets/70203010/f8946326-dd63-4346-9b44-7cdee305a091" alt="Recursive query" width="60%">
-    <p>Fig.2 - Iterative query</p>
+    <p>Fig.2 - Recursive query</p>
 </div>
 
 ## 실행
