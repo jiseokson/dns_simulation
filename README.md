@@ -72,7 +72,11 @@ $ ./companyDNSserver 30001 gogle.txt
     첫 번째 query `www.abc.com`을 해결하는 과정 중에 Local DNS Server에는 `abc.com`의 Authoritative DNS Server의 정보가 caching 되었다. 따라서 두 번째 query `ftp.abc.com`은 상위 DNS Server에 query할 필요없이 바로 `abc.com`의 Authoritavie DNS Server에 query가 가능하다. 또한 `www.abc.com`에 대한 query가 다시 도착했을 때 곧바로 reply하는 것을 확인할 수 있다.
     ![image](https://github.com/jiseokson/dns_simulation/assets/70203010/610ca279-0057-4368-85e2-ec7e78fb42c4)
 
+## 첨부
 
+[과제.pdf](https://github.com/user-attachments/files/16602538/default.pdf)
+
+[설계보고서.pdf](https://github.com/user-attachments/files/16602539/default.pdf)
 
 
 
